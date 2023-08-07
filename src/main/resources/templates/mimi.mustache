@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<body>
+<div class="container">
+
+    <input id="pageNo" type="hidden" value="{{pageNo}}">
+
+    <table id="mimihome" class="table table-dark table-hover">
+        <tr>
+            <th>
+                상호명
+            </th>
+            <th>
+                전화번호
+            </th>
+            <th>
+                주소
+            </th>
+            <th>
+                대표음식
+            </th>
+            <th>
+                영업시간
+            </th>
+        </tr>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item"><a class="page-link" id="link-1" href=""></a></li>
+            <li class="page-item"><a class="page-link" id="link-2" href=""></a></li>
+            <li class="page-item"><a class="page-link" id="link-3" href=""></a></li>
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script>
+    $(document).ready(function(){
+
+    const pageNoo = parseInt($('#pageNo').val());
+
+    const link1 = $('#link-1');
+    link1.attr('href', '/mimi/' + pageNoo);
+    link1.text(pageNoo)
+
+    const link2 = $('#link-2');
+    link2.attr('href', '/mimi/' + (pageNoo + 1));
+    link2.text(pageNoo+1)
+
+    const link3 = $('#link-3');
+    link3.attr('href', '/mimi/' + (pageNoo + 2));
+    link3.text(pageNoo+2)
+
+
+
+    const mimihome = $('#mimihome');
+
+        //ajax 통신
+        $.ajax({
+        url : '/josnapi/'+pageNoo,
+        type : 'GET',
+        //리턴타입지정
+        dataType : 'json',
+        //서버 요청 전 호출되는 함수 return false; 일 경우 요청을 중단한다
+        beforeSend : function(){
+            console.log("ajax호출")
+        },
+        //요청완료시
+        success : function(data){
+        console.log("호출성공");
+        console.log(data);
+        let itemsArray = data.response.body.items.item;
+        itemsArray.forEach(function (item) {
+          let row = '<tr>' +
+                    '<td>' + item.TITLE + '</td>' +
+                    '<td>' + item.CNTCT_TEL + '</td>' +
+                    '<td>' + item.ADDR1 + '</td>' +
+                    '<td>' + item.RPRSNTV_MENU + '</td>' +
+                    '<td>' + item.USAGE_DAY_WEEK_AND_TIME + '</td>' +
+                    '</tr>';
+           mimihome.append(row);
+        });
+        },
+        //요청실패시
+        error : function(jqXHR){
+        console.log("실패입니다");
+        }
+        });
+    });
+
+</script>
+</body>
+</html>
